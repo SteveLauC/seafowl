@@ -12,7 +12,7 @@ use datafusion::error::Result;
 use datafusion::execution::{RecordBatchStream, TaskContext};
 use datafusion::physical_plan::ExecutionPlan;
 use datafusion::physical_plan::ExecutionPlanProperties;
-use datafusion_common::{DataFusionError, TableReference};
+use datafusion_common::DataFusionError;
 use futures::stream::select_all;
 use futures::{pin_mut, StreamExt, TryStream, TryStreamExt};
 use iceberg::io::FileIO;
@@ -22,7 +22,6 @@ use iceberg::spec::{
     ManifestWriter, Operation, PartitionSpec, Snapshot, SnapshotReference,
     SnapshotRetention, Struct, Summary, TableMetadata, TableMetadataBuilder,
 };
-use iceberg::table::Table;
 use iceberg::writer::file_writer::location_generator::{
     DefaultFileNameGenerator, DefaultLocationGenerator,
 };
@@ -35,7 +34,7 @@ use tracing::{info, warn};
 use url::Url;
 use uuid::Uuid;
 
-use super::{LakehouseTableProvider, SeafowlContext};
+use super::SeafowlContext;
 
 use thiserror::Error;
 
@@ -156,14 +155,12 @@ const DEFAULT_SCHEMA_ID: i32 = 0;
 pub async fn record_batches_to_iceberg(
     record_batch_stream: impl TryStream<Item = Result<RecordBatch, DataLoadingError>>,
     arrow_schema: SchemaRef,
-    table: &Table,
+    file_io: &FileIO,
+    table_location: &str,
 ) -> Result<(), DataLoadingError> {
     pin_mut!(record_batch_stream);
 
-    let table_location = table.metadata().location();
     let table_base_url = Url::parse(table_location).unwrap();
-
-    let file_io = table.file_io();
 
     let version_hint_location = format!("{}/metadata/version-hint.text", table_base_url);
     let version_hint_input = file_io.new_input(&version_hint_location)?;
@@ -386,18 +383,10 @@ pub async fn record_batches_to_iceberg(
 impl SeafowlContext {
     pub async fn plan_to_iceberg_table(
         &self,
-        name: impl Into<TableReference>,
+        file_io: &FileIO,
+        table_location: &str,
         plan: &Arc<dyn ExecutionPlan>,
     ) -> Result<()> {
-        let provider = match self.get_lakehouse_table_provider(name).await? {
-            LakehouseTableProvider::Iceberg(p) => p,
-            _ => {
-                return Err(DataFusionError::Internal(
-                    "Expected iceberg provider".to_string(),
-                ));
-            }
-        };
-        let table = provider.table();
         let schema = plan.schema();
         let mut streams: Vec<Pin<Box<dyn RecordBatchStream + Send>>> = vec![];
         for i in 0..plan.output_partitioning().partition_count() {
@@ -411,7 +400,8 @@ impl SeafowlContext {
                 DataLoadingError::BadInputError(format!("Datafusion error: {}", e))
             }),
             schema,
-            &table,
+            file_io,
+            table_location,
         )
         .await
         .map_err(|e| DataFusionError::External(Box::new(e)))?;

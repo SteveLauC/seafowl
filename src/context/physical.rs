@@ -206,8 +206,11 @@ impl SeafowlContext {
                             .await?;
                         Ok(make_dummy_exec())
                     }
-                    LakehouseTableProvider::Iceberg(_) => {
-                        self.plan_to_iceberg_table(table_name.clone(), &physical)
+                    LakehouseTableProvider::Iceberg(provider) => {
+                        let table = provider.table();
+                        let table_location = table.metadata().location();
+                        let file_io = table.file_io();
+                        self.plan_to_iceberg_table(file_io, table_location, &physical)
                             .await?;
                         Ok(make_dummy_exec())
                     }
