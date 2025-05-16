@@ -663,9 +663,10 @@ pub async fn run_server(
     let socket_addr: SocketAddr = format!("{}:{}", config.bind_host, config.bind_port)
         .parse()
         .expect("Error parsing the listen address");
-    let (_, future) =
-        warp::serve(filters).bind_with_graceful_shutdown(socket_addr, shutdown);
-    future.await
+    // let (_, future) =
+    //     warp::serve(filters).bind_with_graceful_shutdown(socket_addr, shutdown);
+    // future.await
+    panic!("This code won't compile")
 }
 
 #[cfg(test)]
