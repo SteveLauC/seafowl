@@ -13,16 +13,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Setup pre-commit
-      - name: Install pre-commit
+      - name: Code format check
+        run: cargo fmt --all --check
+
+      - name: .toml file format check
         run: |
-          sudo apt-get update
-          sudo apt-get install -y pre-commit
-      - name: Configure pre-commit cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pre-commit
-          key: pre-commit-${{ runner.os }}-pre-commit-${{ hashFiles('**/.pre-commit-config.yaml') }}
+          cargo install taplo-cli --locked
+          taplo fmt --check
+
+      - name: Build workspace in debug mode
+        run: |
+          cargo build
+
+      - name: Clippy check
+        run: |
+          cargo clippy --all-targets --workspace --fix --allow-dirty --allow-staged --allow-no-vcs
+          cargo clippy --all-targets --workspace -- -D warnings --allow clippy::needless_return  # remove once 13458 is resolved
+
       - name: Install protoc
         run: |
           mkdir -p $HOME/d/protoc
@@ -34,15 +41,6 @@ jobs:
           export PATH=$PATH:$HOME/d/protoc/bin
           protoc --version
 
-      - name: Install tool for formatting Cargo.toml files
-        run: cargo install cargo-tomlfmt
-
-      - name: Check pre-commit hooks (formatting and Clippy)
-        run: pre-commit run --all --verbose
-
-      - name: Build workspace in debug mode
-        run: |
-          cargo build
 
       - name: Spin up the test object stores and postgres catalog
         run: docker compose up -d --wait || true
@@ -53,15 +51,3 @@ jobs:
           cargo test --workspace
         env:
           DATABASE_URL: "postgres://postgres:test@localhost:5432/db_test"
-
-      # TODO recompiles the whole thing with different flags (busting the cache?,
-      #      also codecov needs a token for private repos; also this breaks in Docker
-      #      because of security / ASLR disable fails)
-      # - name: Run coverage
-      #   run: |
-      #     cargo install --version 0.20.1 cargo-tarpaulin
-      #     cargo tarpaulin --all --out Xml
-
-      # - name: Report coverage
-      #   continue-on-error: true
-      #   run: bash <(curl -s https://codecov.io/bash)
