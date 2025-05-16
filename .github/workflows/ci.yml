@@ -4,10 +4,6 @@ on: [push, pull_request]
 
 jobs:
   CI:
-    # Enable pull request trigger only from forks, since otherwise we get 2 job runs in PRs
-    if:
-      github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name !=
-      github.repository
     name: Lint, build, test
     runs-on: ubuntu-latest
     env:
@@ -38,28 +34,8 @@ jobs:
           export PATH=$PATH:$HOME/d/protoc/bin
           protoc --version
 
-      # Use https://github.com/marketplace/actions/rust-cache
-
-      # selecting a toolchain either by action or manual `rustup` calls should happen
-      # before the plugin, as the cache uses the current rustc version as its cache key
-      - name: Install minimal nightly with clippy and rustfmt
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: nightly-2024-12-30
-          components: rustfmt, clippy
-
       - name: Install tool for formatting Cargo.toml files
         run: cargo install cargo-tomlfmt
-
-      - uses: Swatinem/rust-cache@v2
-        with:
-          # shared-key: ""
-          # key: ""
-          # env-vars: ""
-          # workspaces: ""
-
-          # Determines if the cache should be saved even when the workflow has failed.
-          cache-on-failure: "true"
 
       - name: Check pre-commit hooks (formatting and Clippy)
         run: pre-commit run --all --verbose
