@@ -15,3 +15,6 @@ profile/memory-profiling_*
 
 # CLI history
 .history
+
+# data directory
+seafowl-data
