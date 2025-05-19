@@ -28,15 +28,6 @@ jobs:
           cargo install taplo-cli --locked
           taplo fmt --check
 
-      - name: Build workspace in debug mode
-        run: |
-          cargo build
-
-      - name: Clippy check
-        run: |
-          cargo clippy --all-targets --workspace --fix --allow-dirty --allow-staged --allow-no-vcs
-          cargo clippy --all-targets --workspace -- -D warnings --allow clippy::needless_return  # remove once 13458 is resolved
-
       - name: Install protoc
         run: |
           mkdir -p $HOME/d/protoc
@@ -48,6 +39,14 @@ jobs:
           export PATH=$PATH:$HOME/d/protoc/bin
           protoc --version
 
+      - name: Build workspace in debug mode
+        run: |
+          cargo build
+
+      - name: Clippy check
+        run: |
+          cargo clippy --all-targets --workspace --fix --allow-dirty --allow-staged --allow-no-vcs
+          cargo clippy --all-targets --workspace -- -D warnings --allow clippy::needless_return  # remove once 13458 is resolved
 
       - name: Spin up the test object stores and postgres catalog
         run: docker compose up -d --wait || true
