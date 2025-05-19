@@ -18,9 +18,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Code format check
+      - name: Install rustfmt and clippy
         run: |
           rustup component add rustfmt 
+          rustup component add clippy
+
+      - name: Code format check
+        run: |
           cargo fmt --all --check
 
       - name: .toml file format check
