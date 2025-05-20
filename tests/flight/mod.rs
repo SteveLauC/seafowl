@@ -17,17 +17,14 @@ use tokio::net::TcpListener;
 use tonic::metadata::MetadataValue;
 use tonic::transport::Channel;
 use uuid::Uuid;
-use warp::hyper::Client;
 
 use clade::schema::{InlineMetastoreCommandStatementQuery, ListSchemaResponse};
 use clade::sync::{DataSyncCommand, DataSyncResponse};
 
 use crate::fixtures::schemas;
-use crate::http::{get_metrics, response_text};
 use crate::statements::create_table_and_insert;
-use crate::{test_seafowl, TestSeafowl};
 
-use seafowl::config::context::{build_context, GRPC_REQUESTS};
+use seafowl::config::context::build_context;
 use seafowl::config::schema::load_config_from_string;
 use seafowl::context::SeafowlContext;
 use seafowl::frontend::flight::run_flight_server;
