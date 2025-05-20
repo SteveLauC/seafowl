@@ -65,6 +65,7 @@ impl VisitorMut for TableVersionProcessor {
         &mut self,
         table_factor: &mut TableFactor,
     ) -> ControlFlow<()> {
+        #[allow(clippy::collapsible_if)]
         if let TableFactor::Table {
             name, ref mut args, ..
         } = table_factor
@@ -150,7 +151,7 @@ mod tests {
             "test_catalog".to_string(),
             "test_schema".to_string(),
         );
-        q.visit(&mut rewriter);
+        let _ = q.visit(&mut rewriter);
 
         // Ensure table name in the original query has been renamed to appropriate version
         assert_eq!(

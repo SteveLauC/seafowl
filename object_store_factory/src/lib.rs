@@ -182,7 +182,7 @@ pub async fn build_object_store_from_opts(
             warn!("Unsupported URL scheme: {}", url);
             Err(object_store::Error::Generic {
                 store: "unsupported_url_scheme",
-                source: format!("Unsupported URL scheme: {}", url).into(),
+                source: format!("Unsupported URL scheme: {url}").into(),
             })
         }
     }

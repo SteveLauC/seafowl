@@ -1046,8 +1046,7 @@ mod tests {
 
         assert_eq!(
             expected_plan, actual_plan,
-            "\n\nexpected:\n\n{:#?}\nactual:\n\n{:#?}\n\n",
-            expected_plan, actual_plan
+            "\n\nexpected:\n\n{expected_plan:#?}\nactual:\n\n{actual_plan:#?}\n\n"
         );
 
         Ok(())

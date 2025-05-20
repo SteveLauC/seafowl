@@ -1,6 +1,7 @@
 use crate::flight::*;
 
 #[tokio::test]
+#[allow(clippy::result_large_err)]
 async fn test_basic_queries() -> Result<()> {
     let (context, mut client) = flight_server(TestServerType::Memory).await;
     create_table_and_insert(context.as_ref(), "flight_table").await;
@@ -27,6 +28,7 @@ async fn test_basic_queries() -> Result<()> {
 }
 
 #[tokio::test]
+#[allow(clippy::result_large_err)]
 async fn test_ddl_types_roundtrip() -> Result<()> {
     let (_context, mut client) = flight_server(TestServerType::Memory).await;
 

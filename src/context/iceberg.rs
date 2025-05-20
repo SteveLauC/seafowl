@@ -162,7 +162,7 @@ pub async fn record_batches_to_iceberg(
 
     let table_base_url = Url::parse(table_location).unwrap();
 
-    let version_hint_location = format!("{}/metadata/version-hint.text", table_base_url);
+    let version_hint_location = format!("{table_base_url}/metadata/version-hint.text");
     let version_hint_input = file_io.new_input(&version_hint_location)?;
     let old_version_hint: Option<u64> = if version_hint_input.exists().await? {
         let version_hint_bytes = version_hint_input.read().await?;
@@ -187,10 +187,8 @@ pub async fn record_batches_to_iceberg(
     let (previous_metadata, previous_metadata_location, iceberg_schema) =
         match old_version_hint {
             Some(version_hint) => {
-                let old_metadata_location = format!(
-                    "{}/metadata/v{}.metadata.json",
-                    table_base_url, version_hint
-                );
+                let old_metadata_location =
+                    format!("{table_base_url}/metadata/v{version_hint}.metadata.json");
                 let old_metadata_bytes =
                     file_io.new_input(&old_metadata_location)?.read().await?;
                 let old_metadata_string =
@@ -346,16 +344,15 @@ pub async fn record_batches_to_iceberg(
         Some(x) => x + 1,
         None => 0,
     };
-    let new_metadata_location = format!(
-        "{}/metadata/v{}.metadata.json",
-        table_base_url, new_version_hint
-    );
+    let new_metadata_location =
+        format!("{table_base_url}/metadata/v{new_version_hint}.metadata.json");
 
     if let Err(iceberg_error) = file_io
         .new_output(&new_metadata_location)?
         .write_exclusive(serde_json::to_vec(&new_metadata).unwrap().into())
         .await
     {
+        #[allow(clippy::collapsible_if)]
         if let Some(iceberg_error_source) = iceberg_error.source() {
             if let Some(opendal_error) =
                 iceberg_error_source.downcast_ref::<opendal::Error>()
@@ -397,7 +394,7 @@ impl SeafowlContext {
         let merged_stream = select_all(streams);
         record_batches_to_iceberg(
             merged_stream.map_err(|e| {
-                DataLoadingError::BadInputError(format!("Datafusion error: {}", e))
+                DataLoadingError::BadInputError(format!("Datafusion error: {e}"))
             }),
             schema,
             file_io,

@@ -113,7 +113,7 @@ mod tests {
             disable_hardlinks: false,
         }
         .build_local_storage();
-        assert!(result.is_ok(), "Expected Ok, got Err: {:?}", result);
+        assert!(result.is_ok(), "Expected Ok, got Err: {result:?}");
     }
 
     #[test]

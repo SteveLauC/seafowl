@@ -3,7 +3,7 @@
 Clade ("grouping of organisms ... composed of a common ancestor and all its lineal descendants") is
 a backronym for **c**atalog of **la**kehouse **de**finitions.
 
-It's purpose it to provide an interface for tracking provenance and facilitate replication of
+It's purpose is to provide an interface for tracking provenance and facilitate replication of
 queryable data assets.
 
 ## HOW

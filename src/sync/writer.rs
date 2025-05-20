@@ -335,8 +335,7 @@ impl SeafowlDataSyncWriter {
                     Err(_) => {
                         return Err(SyncError::InvalidMessage {
                             reason: format!(
-                                "Could not compute metadata directory from URL: {}",
-                                url
+                                "Could not compute metadata directory from URL: {url}",
                             ),
                         })
                     }
@@ -346,8 +345,7 @@ impl SeafowlDataSyncWriter {
                     Err(_) => {
                         return Err(SyncError::InvalidMessage {
                             reason: format!(
-                                "Could not compute table directory from URL: {}",
-                                url
+                                "Could not compute table directory from URL: {url}",
                             ),
                         })
                     }

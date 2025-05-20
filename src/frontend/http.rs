@@ -2,8 +2,8 @@ use arrow::error::ArrowError;
 use datafusion::error::DataFusionError;
 use std::fmt::Debug;
 use std::io::Write;
+use std::sync::Arc;
 use std::time::Instant;
-use std::{net::SocketAddr, sync::Arc};
 use warp::{hyper, Rejection};
 
 use arrow::json::writer::{LineDelimited, WriterBuilder};
@@ -76,17 +76,15 @@ impl TreeNodeVisitor<'_> for ETagBuilderVisitor {
             // TODO handle external Parquet tables too
             if let Some(default_table_source) =
                 source.as_any().downcast_ref::<DefaultTableSource>()
-            {
-                if let Some(table) = default_table_source
+                && let Some(table) = default_table_source
                     .table_provider
                     .as_any()
                     .downcast_ref::<DeltaTable>()
-                {
-                    self.table_versions
-                        .extend(table.table_uri().as_bytes().to_vec());
-                    self.table_versions
-                        .extend(table.version().as_bytes().to_vec());
-                }
+            {
+                self.table_versions
+                    .extend(table.table_uri().as_bytes().to_vec());
+                self.table_versions
+                    .extend(table.version().as_bytes().to_vec());
             }
         }
         Ok(TreeNodeRecursion::Continue)
@@ -349,14 +347,13 @@ pub async fn cached_read_query(
     let etag = plan_to_etag(&plan);
     debug!("ETag: {}, if-none-match header: {:?}", etag, if_none_match);
 
-    if let Some(if_none_match) = if_none_match {
-        if etag == if_none_match {
-            return Ok(warp::reply::with_status(
-                "NOT_MODIFIED",
-                StatusCode::NOT_MODIFIED,
-            )
-            .into_response());
-        }
+    if let Some(if_none_match) = if_none_match
+        && etag == if_none_match
+    {
+        return Ok(
+            warp::reply::with_status("NOT_MODIFIED", StatusCode::NOT_MODIFIED)
+                .into_response(),
+        );
     }
 
     // Guess we'll have to actually run the query
@@ -432,7 +429,7 @@ pub async fn upload(
 
             file_type = filename
                 .split('.')
-                .last()
+                .next_back()
                 .ok_or_else(|| {
                     ApiError::UploadMissingFilenameExtension(filename.clone())
                 })?
@@ -654,19 +651,20 @@ pub fn filters(
 }
 
 pub async fn run_server(
-    context: Arc<SeafowlContext>,
-    config: HttpFrontend,
-    shutdown: impl Future<Output = ()> + Send + 'static,
+    _context: Arc<SeafowlContext>,
+    _config: HttpFrontend,
+    _shutdown: impl Future<Output = ()> + Send + 'static,
 ) {
-    let filters = filters(context, config.clone());
+    // let filters = filters(context, config.clone());
 
-    let socket_addr: SocketAddr = format!("{}:{}", config.bind_host, config.bind_port)
-        .parse()
-        .expect("Error parsing the listen address");
+    // let socket_addr: SocketAddr = format!("{}:{}", config.bind_host, config.bind_port)
+    //     .parse()
+    //     .expect("Error parsing the listen address");
     // let (_, future) =
     //     warp::serve(filters).bind_with_graceful_shutdown(socket_addr, shutdown);
     // future.await
-    panic!("This code won't compile")
+
+    panic!("This code causes the compiler to panic so I commented it out")
 }
 
 #[cfg(test)]

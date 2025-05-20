@@ -111,6 +111,7 @@ impl From<CatalogError> for DataFusionError {
     }
 }
 
+#[allow(clippy::result_large_err)]
 fn not_impl<T>() -> CatalogResult<T> {
     Err(CatalogError::NotImplemented {
         reason: "Metastore method not supported".to_string(),

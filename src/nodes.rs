@@ -162,7 +162,7 @@ impl UserDefinedLogicalNode for SeafowlExtensionNode {
             SeafowlExtensionNode::RenameTable(RenameTable {
                 old_name, new_name, ..
             }) => {
-                write!(f, "RenameTable: {} to {}", old_name, new_name)
+                write!(f, "RenameTable: {old_name} to {new_name}")
             }
             SeafowlExtensionNode::Truncate(Truncate { table_name, .. }) => {
                 write!(f, "Truncate: {table_name}")

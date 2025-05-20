@@ -434,10 +434,10 @@ impl CachingObjectStore {
     /// The algorithm works as follows:
     /// - If a chunk is missing from the cache add it to a batch of pending chunks to fetch at once.
     /// - If the chunk is present in the cache fetch the entire pending chunk batch (if any) and
-    ///     a) add a cache entry with the in-memory data (which is shared by the write task)
-    ///     b) spawn a task to persist the data to the disk
+    ///   a) add a cache entry with the in-memory data (which is shared by the write task)
+    ///   b) spawn a task to persist the data to the disk
     /// - All subsequent calls will get the new cache value that is either read from disk (if the
-    ///     write task finished quickly enough), or from memory (if the write task is still running).
+    ///   write task finished quickly enough), or from memory (if the write task is still running).
     /// - Once the write task completes it will either replace the cache value with a file pointer,
     ///   (if it completed successfully), or invalidate the memory entry (if it didn't).
     ///

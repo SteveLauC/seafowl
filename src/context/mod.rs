@@ -35,6 +35,7 @@ pub struct SeafowlContext {
     pub default_schema: String,
 }
 
+#[allow(clippy::large_enum_variant)]
 pub enum LakehouseTableProvider {
     Delta(DeltaTable),
     Iceberg(IcebergTableProvider),

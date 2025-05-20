@@ -252,7 +252,7 @@ pub fn add_amazon_s3_environment_variables(
 async fn detect_region(url: &Url) -> Result<String, object_store::Error> {
     let bucket = url.host_str().ok_or(object_store::Error::Generic {
         store: "parse_url",
-        source: format!("Could not find a bucket in S3 path {0}", url).into(),
+        source: format!("Could not find a bucket in S3 path {url}").into(),
     })?;
 
     info!("Autodetecting region for bucket {}", bucket);
@@ -362,10 +362,10 @@ mod tests {
         }
         .build_amazon_s3();
 
-        assert!(result.is_ok(), "Expected Ok, got Err: {:?}", result);
+        assert!(result.is_ok(), "Expected Ok, got Err: {result:?}");
 
         let store = result.unwrap();
-        let debug_output = format!("{:?}", store);
+        let debug_output = format!("{store:?}");
 
         assert!(debug_output.contains("region: \"us-west-2\""));
         assert!(debug_output.contains("bucket: \"my-bucket\""));
@@ -392,10 +392,10 @@ mod tests {
         }
         .build_amazon_s3();
 
-        assert!(result.is_ok(), "Expected Ok, got Err: {:?}", result);
+        assert!(result.is_ok(), "Expected Ok, got Err: {result:?}");
 
         let store = result.unwrap();
-        let debug_output = format!("{:?}", store);
+        let debug_output = format!("{store:?}");
 
         assert!(debug_output.contains("region: \"us-west-2\""));
         assert!(debug_output.contains("bucket: \"my-bucket\""));

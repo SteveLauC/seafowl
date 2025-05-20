@@ -155,25 +155,19 @@ mod tests {
 
         assert_metric(
             &recorder,
-            format!(
-                "{}{{consumer=\"SomeConsumer\",result=\"success\"}}",
-                ALLOCATIONS
-            )
-            .as_str(),
+            format!("{ALLOCATIONS}{{consumer=\"SomeConsumer\",result=\"success\"}}",)
+                .as_str(),
             16,
         );
         assert_metric(
             &recorder,
-            format!(
-                "{}{{consumer=\"SomeConsumer\",result=\"error\"}}",
-                ALLOCATIONS
-            )
-            .as_str(),
+            format!("{ALLOCATIONS}{{consumer=\"SomeConsumer\",result=\"error\"}}",)
+                .as_str(),
             1,
         );
         assert_metric(
             &recorder,
-            format!("{}{{consumer=\"SomeConsumer\"}}", DEALLOCATIONS).as_str(),
+            format!("{DEALLOCATIONS}{{consumer=\"SomeConsumer\"}}").as_str(),
             16,
         );
         assert_metric(&recorder, RESERVED, 0);
