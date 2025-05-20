@@ -125,10 +125,7 @@ fn get_client(ssl_cert_file: &Option<String>) -> std::io::Result<Client> {
         None => Ok(ClientBuilder::new()),
     }?;
     builder.build().map_err(|e| {
-        std::io::Error::new(
-            std::io::ErrorKind::Other,
-            format!("Error creating reqwest client builder: {e}"),
-        )
+        std::io::Error::other(format!("Error creating reqwest client builder: {e}"))
     })
 }
 
@@ -395,11 +392,11 @@ impl ObjectStore for HttpObjectStore {
             ))
             .await;
 
-        if let Err(HttpObjectStoreError::HttpClientError(ref e)) = response {
-            if e.status() == Some(StatusCode::FORBIDDEN) {
-                warn!("HEAD request for location {} failed. Assuming an S3-like API and trying to emulate HEAD via GET", &uri);
-                return self.head_via_get(location).await;
-            }
+        if let Err(HttpObjectStoreError::HttpClientError(ref e)) = response
+            && e.status() == Some(StatusCode::FORBIDDEN)
+        {
+            warn!("HEAD request for location {} failed. Assuming an S3-like API and trying to emulate HEAD via GET", &uri);
+            return self.head_via_get(location).await;
         }
 
         let response = response?;

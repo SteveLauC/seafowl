@@ -135,8 +135,7 @@ fn test_cli_basic() -> std::io::Result<()> {
 
     assert_eq!(
         expected_stdout, actual,
-        "\n\nexpected:\n\n{:#?}\nactual:\n\n{:#?}\n\n",
-        expected_stdout, actual
+        "\n\nexpected:\n\n{expected_stdout:#?}\nactual:\n\n{actual:#?}\n\n"
     );
 
     //
@@ -154,8 +153,7 @@ fn test_cli_basic() -> std::io::Result<()> {
 
     assert_eq!(
         expected_stderr, actual,
-        "\n\nexpected:\n\n{:#?}\nactual:\n\n{:#?}\n\n",
-        expected_stderr, actual
+        "\n\nexpected:\n\n{expected_stderr:#?}\nactual:\n\n{actual:#?}\n\n"
     );
 
     // Wait for the command to finish

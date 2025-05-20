@@ -395,6 +395,7 @@ If Seafowl is running on GCP a token should be fetched using the GCP metadata en
         _ => {}
     };
 
+    #[allow(clippy::collapsible_if)]
     if let Some(max_memory) = config.runtime.max_memory {
         if max_memory < MIN_MEMORY {
             return Err(ConfigError::Message(format!(

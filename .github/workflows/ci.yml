@@ -49,8 +49,7 @@ jobs:
 
       - name: Clippy check
         run: |
-          cargo clippy --all-targets --workspace --fix --allow-dirty --allow-staged --allow-no-vcs
-          cargo clippy --all-targets --workspace -- -D warnings --allow clippy::needless_return  # remove once 13458 is resolved
+          cargo clippy --all-targets --workspace -- -D warnings
 
       - name: Spin up the test object stores and postgres catalog
         run: docker compose up -d --wait || true

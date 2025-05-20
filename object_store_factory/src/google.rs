@@ -218,10 +218,10 @@ mod tests {
         }
         .build_google_cloud_storage();
 
-        assert!(result.is_ok(), "Expected Ok, got Err: {:?}", result);
+        assert!(result.is_ok(), "Expected Ok, got Err: {result:?}");
 
         let store = result.unwrap();
-        let debug_output = format!("{:?}", store);
+        let debug_output = format!("{store:?}");
 
         assert!(debug_output.contains("bucket_name: \"my-bucket\""));
     }
@@ -235,10 +235,10 @@ mod tests {
         }
         .build_google_cloud_storage();
 
-        assert!(result.is_ok(), "Expected Ok, got Err: {:?}", result);
+        assert!(result.is_ok(), "Expected Ok, got Err: {result:?}");
 
         let store = result.unwrap();
-        let debug_output = format!("{:?}", store);
+        let debug_output = format!("{store:?}");
 
         assert!(debug_output.contains("bucket_name: \"my-bucket\""));
     }

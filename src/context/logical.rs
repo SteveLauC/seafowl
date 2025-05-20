@@ -254,6 +254,7 @@ impl SeafowlContext {
                     };
 
                     let mut database = None;
+                    #[allow(clippy::collapsible_if)]
                     if let Some(sql_exprs) = partitions {
                         if let [SqlExpr::Identifier(name)] = sql_exprs.as_slice() {
                             database = Some(name.value.clone());
@@ -342,7 +343,7 @@ impl SeafowlContext {
             self.default_catalog.clone(),
             DEFAULT_SCHEMA.to_string(),
         );
-        q.visit(&mut version_processor);
+        let _ = q.visit(&mut version_processor);
 
         if version_processor.table_versions.is_empty() {
             // No time-travel syntax detected, just return the regular session state

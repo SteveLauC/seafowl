@@ -13,6 +13,6 @@ mod tests {
     #[test]
     fn test_build_in_memory_storage() {
         let result = build_in_memory_storage();
-        assert!(result.is_ok(), "Expected Ok, got Err: {:?}", result);
+        assert!(result.is_ok(), "Expected Ok, got Err: {result:?}");
     }
 }

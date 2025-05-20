@@ -131,8 +131,7 @@ pub async fn test_seafowl() -> TestSeafowl {
             Err(err) => {
                 let _ = child.kill();
                 panic!(
-                    "Failed to connect to the test Seafowl after {} retries: {:?}",
-                    retries, err
+                    "Failed to connect to the test Seafowl after {retries} retries: {err:?}"
                 );
             }
         }
